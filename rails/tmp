@@ -1,0 +1,13 @@
+{% set user = pillar['ruby_config']['gemset_user'] %}
+{% set rails_versions = pillar['rails_config']['rails_versions'] %}
+{% set rails_ruby_name = pillar['rails_config'][rails_ruby_name] %}
+{% set rails_ruby_version = pillar['rails_config'][rails_ruby_version] %}
+{% set gemset_name = "%s_%s"%(user,rails_version) %}
+
+
+  {{gemset_name}}:
+    rvm.gemset_present:
+      - ruby: {{rails_ruby_version}}
+      - runas: {{user}}
+      - require:
+        - rvm: {{rails_ruby_name}}

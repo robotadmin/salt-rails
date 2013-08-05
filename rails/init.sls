@@ -8,13 +8,13 @@ include:
 {% set rails_ruby_version = pillar['rails_config']['ruby_version'] %}
 
 {% for rails_version in rails_versions %}
-{% set gemset_name = "%s_%s_rails%s"%(user,rails_ruby_name,rails_version) %}
+{% set gemset_name = "%s_%s_rails-%s"%(user,rails_ruby_name,rails_version) %}
 {{gemset_name}}:
   rvm.gemset_present:
-    - ruby: rails_ruby_version
+    - ruby: {{rails_ruby_version}}
     - runas: {{user}}
     - require:
-      - rvm: rails_ruby_name
+      - rvm: {{rails_ruby_name}}
 {% endfor %}
 
 install rails:
