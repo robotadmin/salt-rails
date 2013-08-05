@@ -2,18 +2,26 @@ include:
   - rvm
   - ruby
 
-{% set user = pillar['gemset_user'] %}
+{% set user = pillar['ruby_config']['gemset_user'] %}
+{% set rails_versions = pillar['rails_config']['versions'] %}
+{% set rails_ruby_name = pillar['rails_config']['ruby_name'] %}
+{% set rails_ruby_version = pillar['rails_config']['ruby_version'] %}
 
-{{user}}_rails3.2.13:
+{% for rails_version in rails_versions %}
+{% set gemset_name = "%s_%s_rails%s"%(user,rails_ruby_name,rails_version) %}
+{{gemset_name}}:
   rvm.gemset_present:
-    - ruby: 2.0.0
+    - ruby: rails_ruby_version
     - runas: {{user}}
     - require:
-      - rvm: ruby-2.0.0
+      - rvm: rails_ruby_name
+{% endfor %}
 
 install rails:
+  {% for rails_version in rails_versions %}
+  {% set gemset_name = "%s_%s_rails%s"%(user,rails_ruby_name,rails_version) %}
   cmd.run:
-    - name: /home/{{user}}/.rvm/bin/rvm 2.0.0@{{user}}_rails3.2.13 do gem install rails --version 3.2.13
+    - name: /home/{{user}}/.rvm/bin/rvm {{rails_ruby_version}}@{{gemset_name}} do gem install rails --version {{rails_version}}
     - user: {{user}}
     - shell: /bin/bash
-
+  {% endfor %}

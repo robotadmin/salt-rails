@@ -1,4 +1,8 @@
-{% set user = pillar['gemset_user'] %}
+include:
+  - rvm
+
+{% set user = pillar['ruby_config']['gemset_user'] %}
+{% set rubies = pillar['ruby_config']['rubies'] %}
 
 {{user}}:
   group:
@@ -13,7 +17,8 @@
       - group: {{user}}
       - group: rvm
 
-ruby-1.9.3:
+{% for ruby in rubies %}
+{{ ruby }}:
   rvm.installed:
     - default: True
     - runas: {{user}}
@@ -21,12 +26,4 @@ ruby-1.9.3:
       - pkg: rvm-deps
       - pkg: mri-deps
       - user: {{user}}
-
-ruby-2.0.0:
-  rvm.installed:
-    - default: True
-    - runas: {{user}}
-    - require:
-      - pkg: rvm-deps
-      - pkg: mri-deps
-      - user: {{user}}
+{% endfor %}
